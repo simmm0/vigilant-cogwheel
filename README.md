@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Fine-Tune Ministral-3B Locally
 **Example GPU: NVIDIA RTX 5000 Ada Laptop (16 GB VRAM)**  
 **Model: mistralai/Ministral-3B-Instruct-2410** – the best 3B model in the world (Dec 2025)  
@@ -141,3 +142,42 @@ Do whatever you want with your model – it’s 100% yours.
 
 Happy fine-tuning!  
 If you get stuck, open an issue – I usually reply within hours.
+=======
+# Demo Dataset for Enterprise Expert Assistant
+
+This repo includes a curated JSONL demo dataset that showcases high-quality enterprise guidance across Python engineering, project management (Jira/Smartsheet), hardened Linux, networking, and software engineering at scale.
+
+## Files
+- `demo_enterprise_expert.jsonl`: ShareGPT-style messages with a consistent `system` primer, realistic user prompts, and expert assistant replies (safe defaults, concise commands, and refusals where appropriate).
+
+## Structure
+- One JSON object per line.
+- Each object has `messages: [{role, content}]` with roles `system`, `user`, `assistant`.
+- Keep content UTF-8, concise, and topic-focused to improve coherence/diversity scores.
+
+## Quick Run with Annealing
+```bash
+python -m cli.main --dataset demo_enterprise_expert.jsonl --enable-annealing \
+  --anneal-cycles 3 --anneal-initial-temp 1.3 --anneal-min-temp 0.3 \
+  --quality-min-length 32 --quality-min-coherence 0.4 --quality-min-diversity 0.3
+```
+
+The annealer will score/filter the dataset, then training proceeds as usual. Adjust thresholds to tighten or relax filtering. For larger real datasets, start with a small curated seed like this and expand while monitoring quality flags.
+
+## Using Mistral-7B
+- Default base: `mistralai/Ministral-3B-Instruct-2410`. To use 7B, pass `--model-name mistralai/Mistral-7B-Instruct-v0.3`.
+- On a 16 GB GPU: use 4-bit + LoRA (already configured); expect tighter headroom than 3B. Full FP16 fine-tune is not recommended on 16 GB.
+- Example:
+```bash
+python -m cli.main --dataset demo_enterprise_expert.jsonl \
+  --model-name mistralai/Mistral-7B-Instruct-v0.3 \
+  --output-dir mistral-7b-finetuned \
+  --enable-annealing --anneal-cycles 3 --anneal-initial-temp 1.3 --anneal-min-temp 0.3
+```
+
+## Running multiple models (“council”) notes
+- On 16 GB, running multiple 7B models concurrently on GPU is tight; consider CPU/offload or staggered (sequential/round-robin) calls.
+- Safer pattern: run multiple CLI processes with different datasets/purposes but serialize GPU-heavy steps, or offload one model to CPU if RAM allows (slower).
+- Monitor VRAM and process count; avoid loading several 7B weights simultaneously on a single 16 GB card.
+
+>>>>>>> 852c870 (feat: add 7b switch and enterprise demo dataset)

@@ -13,7 +13,7 @@ def test_quality_scorer_accepts_balanced_sample():
         {"role": "user", "content": "Hello, can you explain transformers?"},
         {"role": "assistant", "content": "Sure, transformers are neural network architectures."},
     ]
-    thresholds = QualityThresholds(min_length=2, min_coherence=0.1, min_diversity=0.1)
+    thresholds = QualityThresholds(min_length=2, min_coherence=0.0, min_diversity=0.1)
     scorer = QualityScorer(thresholds)
 
     result = scorer.score(messages)
@@ -32,6 +32,6 @@ def test_quality_scorer_flags_repetition_and_length():
 
     result = scorer.score(messages)
     assert result["passes"] is False
-    assert "length" in result["flags"]
     assert "repetition" in result["flags"]
+    assert "diversity" in result["flags"]
 

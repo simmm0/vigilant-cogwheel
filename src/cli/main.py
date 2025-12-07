@@ -21,6 +21,7 @@ def main():
     parser.add_argument("--config", type=str, help="Path to config YAML file")
     parser.add_argument("--dataset", type=str, required=True, help="Path to dataset JSONL file")
     parser.add_argument("--output-dir", type=str, default="ministral-3b-finetuned")
+    parser.add_argument("--model-name", type=str, help="Base model name (e.g., mistralai/Ministral-3B-Instruct-2410 or mistralai/Mistral-7B-Instruct-v0.3)")
     parser.add_argument("--enable-annealing", action="store_true", help="Enable self-annealing dataset pipeline")
     parser.add_argument("--anneal-cycles", type=int, help="Number of annealing cycles")
     parser.add_argument("--anneal-initial-temp", type=float, help="Initial annealing temperature")
@@ -49,6 +50,8 @@ def main():
     config.dataset_path = args.dataset
     config.output_dir = args.output_dir
     config.local_cache_dir = args.dataset_cache_dir or config.local_cache_dir
+    if args.model_name:
+        config.model_name = args.model_name
 
     anneal_cfg = config.annealing
     if args.enable_annealing:
