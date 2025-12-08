@@ -69,6 +69,14 @@ export default function App() {
     return () => clearInterval(interval);
   }, [job]);
 
+  // In dev, skip the auth gate to speed up local testing.
+  useEffect(() => {
+    if (import.meta.env?.DEV && !authenticated) {
+      setAuthToken("dev-token");
+      setAuthenticated(true);
+    }
+  }, [authenticated]);
+
   const handleRun = async () => {
     setLogs((prev) => [...prev, "Starting job..."]);
     setJob({ id: null, status: "running" });
